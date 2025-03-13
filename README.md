@@ -8,9 +8,11 @@ Project Overview:
 -Players interact through a terminal style interface to make choices
 
 Screenshots:
-![Game UI](Screenshots/Design.png)
+<img width="1472" alt="Image" src="https://github.com/user-attachments/assets/a66ab943-8ab7-4bea-a431-b995b8ddc085" />
 
-![Game UI](Screenshots/PlayersChoice.png)
+
+<img width="1514" alt="Image" src="https://github.com/user-attachments/assets/a249738e-0c88-45cb-b26a-30451a854d18" />
+
 
 Planned Feature: 
 -OpenAI will generate unique puzzles and obstacles based on player choices
