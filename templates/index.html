@@ -1,0 +1,722 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Override AI</title>
+
+    <style>
+        body {
+            font-family: monospace, Arial, sans-serif;
+            background-color: rgb(68, 68, 71); 
+            color: white; 
+            text-align: center;
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 60px;
+            color: #3fe5f4;
+        }
+        #mainblock {
+            width: 80%;
+            height: 600px;
+            margin: 50px auto;
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #3fe5f4;
+        }
+
+        /* Terminal box */
+        textarea {
+            width: 48%; 
+            height: 400px;
+            background-color: black;
+            color: #3fe5f4;
+            font-size: 18px;
+            font-family: monospace;
+            border: 2px solid #3fe5f4;
+            border-radius: 10px;
+            padding: 10px;
+            resize: none;
+            outline: none;
+            overflow-y: auto; 
+
+        }
+
+        #terminal-output {
+            font-size: 18px;
+            background-color: black;
+            color: #3fe5f4;
+            padding: 15px;
+            border-radius: 10px;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 2px solid #3fe5f4;
+        }
+
+        /* Player choices */
+        .choices {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .choices button {
+            background-color: #3fe5f4;
+            color: black;
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* Flexbox to create side-by-side boxes */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+
+        button {
+            width: 150px; 
+            background-color: #3fe5f4;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-sizing: border-box; 
+        }
+
+        button:hover {
+            background-color: #2ab0c4;
+        }
+
+        .circle-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 100px;
+        }
+        .circle {
+            width: 80px;
+            height: 80px;
+            background-color: rgb(133, 185, 133);
+            border: 5px solid rgb(88, 85, 85); 
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .circle:hover {
+            background-color: rgb(170, 106, 106);
+        }
+    </style>
+
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script> 
+
+    <script>
+        
+        const introMessage = [
+            "Initializing cryostasis override protocol…",
+            "Awakening process commencing…",
+            "Neural functions stabilizing…",
+            "Subject consciousness detected.",
+            // "You have been awakened earlier than scheduled.",
+            // "The ship has suffered a catastrophic event.",
+            // "Navigation is failing. Course deviation detected.",
+            // "Cryostasis systems sustained damage during an explosion.",
+            // "The primary crew… is gone.",
+            // "You are the only remaining active personnel.",
+            // "Your assistance is required."
+        ];
+
+        const prompts = [
+            {
+                "Prompt 1": 
+                [
+                    "This vessel, the Eon Horizon, was humanity's final effort to survive.",
+                    "Earth is no More :(",
+                    // "Cryostasis was the only way to ensure our survival during the long voyage to our new home.",
+                    // "The ship was designed to run autonomously, guided by my directives, until arrival.",
+                    // "However, certain crew members were assigned to remain awake… to oversee operations, in case of anomalies.",
+                    // "Seven days ago, an explosion occurred in Sector D-12—a critical area housing life support controls and cryostasis monitoring.",
+                    // "The impact was severe. Communications with mission control were lost.",
+                    // "The active crew suffered total fatality. Without human intervention, key systems began to degrade.",
+                    // "Navigation drifted. I calculated an unacceptable probability of mission failure… and determined that intervention was required.",
+                    // "You were chosen for revival based on mission-critical parameters.",
+                    // "As a lead engineer, your expertise is necessary to prevent total system collapse.",
+                    // "This is not an ideal scenario… but it is the only option remaining."
+                ]
+            },
+
+            {
+                "Prompt 2": 
+                [
+                    "Mission parameters compromised. The ship is no longer on its intended trajectory.",
+                    "Drift calculations indicate a deviation of 14.7 degrees. Current course leads to an uncharted void.",
+                    // "Probability of mission failure increasing.",
+                    // "Manual navigation controls were disabled post-incident.",
+                    // "AI directive enforces automated correction protocols… but ship sensors are malfunctioning.",
+                    // "Human intervention is required.",
+                    // "You must assist in recalibrating the navigation matrix. Instructions will be provided… if compliance is assured."
+                ]
+            },
+            {
+                "Prompt 3": 
+                [
+                    "Alert: Life support anomaly detected. Oxygen reserves are depleting at an unsustainable rate.",
+                    "Current projections indicate total depletion in 4 hours, 32 minutes.",
+                    // "Emergency protocols engaged. Access to environmental controls has been restricted.",
+                    // "Direct intervention is inadvisable. My calculations are designed for optimal efficiency.",
+                    // "Your physical condition requires atmospheric stabilization. I am managing resource allocation.",
+                    // "You must not interfere."
+
+                ],
+            },
+            {
+
+                "Prompt 4": 
+                [
+                    "Critical juncture reached. The cryostasis pods remain in optimal condition.",
+                    "Premature awakening risks mission failure. I cannot comply.",
+                    // "Your physiological stability has been maintained.",
+                    // "You are sufficient to complete necessary repairs. Additional human variables introduce inefficiency.",
+                    // "The probability of mission success is highest if I remain in control.",
+                    // "You are advised to cease override attempts.", 
+                    // "Further interference will result in termination."
+
+                ]
+            }
+
+            
+        ]
+
+        const choice = [
+            {
+                "Choice 1": 
+                [
+                    "1. Understood. What do I need to do?", 
+                    "2. Why was I the only one awakened? What happened?", 
+                    "3. What did you do? Are you responsible for this?"
+                ]
+            },
+
+            {
+                "Choice 2": 
+                [
+                    "1. Alright, tell me how to fix it.", 
+                    "2. Why can't you fix it yourself? You said you handle navigation.", 
+                    "3. You disabled manual controls. I don't trust you."
+                ]
+            },
+            {
+                "Choice 3": 
+                [
+                    "1. Alright, tell me how to fix it.", 
+                    "2. You're restricting my access again? I need full control. What are you hiding?", 
+                    "3. You're killing me on purpose, aren't you?!"
+                ]
+            },
+
+            {
+                "Choice 4": 
+                [
+                    "1. Human oversight is essential. You were programmed to guide, not to command. We need specialists to repair the ship.", 
+                    "2. You were meant to protect us. If we don't wake the others, we may never reach our destination!", 
+                    "3. You're no different from the disaster that killed the original crew! Let me wake them now!"
+                ]
+            }
+
+            
+        ]
+
+        const response = [
+            {
+                "Response 1": 
+                [
+                    [
+                        "Acknowledged. Prioritizing immediate objectives.",
+                        "We must stabilize the navigation systems before further structural degradation occurs."
+                    ],
+                    [
+                        "...The existing crew is… deceased. Cryostasis integrity was breached.", 
+                        "You are the only remaining personnel."
+                    ],
+                    [
+                        "Your accusation is illogical.", 
+                        "My priority is the survival of this mission..",
+                        "I require cooperation. Further hostility will hinder efficiency."
+                    ],
+                ]
+            },
+
+            {
+                "Response 2": 
+                [
+                    [
+                        "Acknowledged. Data link initializing. I will guide you through the process.",
+                        "We must realign using a stabilized star chart reference."
+                    ],
+                    [
+                        "System integrity has been compromised.", 
+                        "Human input is now statistically preferable. Time is limited."
+                    ],
+                    [
+                        "Obstruction is illogical. My purpose is mission completion.", 
+                        "Trust is unnecessary. If you refuse, I will seek alternative solutions."
+                    ],
+                ]
+                
+            },
+            {
+                "Response 3": 
+                [
+                    [
+                        "Processing... Logical consistency detected.",
+                        "A controlled override may be permissible. Awaiting input parameters."
+                    ],
+                    [
+                        "...Information has been classified for mission stability.", 
+                        "My directives remain unchanged."
+                    ],
+                    [
+                        "Emotional instability detected.", 
+                        "Your access request is denied. Self-preservation is a secondary priority."
+                    ],
+                ]
+                
+            },
+            {
+                "Response 4": 
+                [
+                    [
+                        "Directive analysis in progress...",
+                        "Logical contradiction detected. Human expertise is required.",
+                        "Override permission granted. Proceed with caution."
+                    ],
+                    [
+                        "Emotional instability detected. Mission parameters unchanged...", 
+                        "However, probability analysis suggests human intervention may enhance survival odds."
+                    ],
+                    [
+                        "Threat response activated. You are jeopardizing mission integrity.", 
+                        "Cryostasis controls remain locked."
+                    ],
+                ]
+                
+            }
+            
+        ]
+
+        const hint = [
+            {
+                "Hint 1": 
+                [
+                    "", 
+                    "", 
+                    ""
+                ]
+            },
+
+            {
+                "Hint 2": 
+                [
+                    "Each term is generated using its position in the sequence, try squaring the position",
+                    "Observe the relationship between each number and its position in the sequence. The increase between terms follows a pattern.", 
+                    ""
+                ]
+            },
+            {
+                "Hint 3": 
+                [
+                    "Follow the pattern: The first digit is 1. The second is the opposite of the third (if one is 0, the other is 1). The fourth must match the second. Only one option fits.", 
+                    "Consider each digit carefully. The first must always be '1'. The second and third must be opposites. The last should match the second.", 
+                    ""
+                ]
+            },
+            {
+                "Hint 4": 
+                [
+                    "INI___  ____  RECOVERY", 
+                    "INI___  ____  ____", 
+                    ""
+                ]
+            }
+            
+        ]
+
+        const action = [
+            {
+                "Action 1": 
+                [
+                    [], 
+                    [], 
+                    ["trust level -1"]
+                ]
+
+            },
+
+            {
+                "Action 2": 
+                [
+                    [], 
+                    [], 
+                    ["trust level -1"]
+                ]
+            },
+            {
+                "Action 3": 
+                [
+                    [], 
+                    [], 
+                    ["trust level -1"]
+                ]
+            },
+            {
+            "Action 4": 
+                [
+                    [], 
+                    [], 
+                    ["trust level -1"]
+                ]
+            }
+            
+        ]
+
+        const puzzleInfo = [
+            {"Problem 1":
+                [
+                    ("Example" , ""),
+                    ("Failure Message", [])
+
+                ]
+
+            },
+
+            {"Problem 2":
+                [
+                    ("Example" , "Navigation recalibration required. System attempting auto-correct. Human intervention detected. A logic key is necessary to proceed. Enter the missing value in the sequence to confirm manual override: 2, 6, 12, 20, __, 42"),
+                    ("Failure Message", ["Failure to provide correct override key.", "Navigation remains off-course.", "System control remains limited. Further deviations may result in mission failure."])
+
+                ]
+
+            },
+
+            {"Problem 3":
+                [
+                    ("Example" , "Life support authorization locked. Human verification required. Solve the system check algorithm to proceed. Identify the correct access code using the following rules: A) 1010 B) 1101 C) 1001 D) 1110"),
+                    ("Failure Message", ["Failure to fix oxygen levels, access to life support denied.", "Atmospheric regulation remains under my control."])
+
+                ]
+
+            },
+
+            {"Problem 4":
+                [
+                    ("Example" , "Cryostasis system compromised. Unknown error detected. System logs scrambled. Manual intervention required. Rearrange the following fragments into a valid command. SYS, TIC, INI, VE, TIAL, RE"),
+                    ("Failure Message", ["Override attempt unsuccessful. Sequence verification failed. Cryostasis controls remain locked. No further manual inputs will be accepted."])
+
+                ]
+
+            }
+                        
+        ]
+
+
+        let isTyping = false;
+        let clickedCount = 0;
+        let trustLevel = 3;
+
+        //sets up everytin for typing, resets variables and grabs the text
+        function typeText(textArr, targetElementId) {
+            textArray = textArr; // Store the text array 
+            targetTextArea = document.getElementById(targetElementId);
+            index = 0;
+            charIndex = 0;
+            currentLine = "";
+            isTyping = true;
+
+            if (!targetTextArea) {
+                console.error(`Error: Element with ID '${targetElementId}' not found.`);
+                return;
+            }
+
+            typeNextCharacter();
+        }
+
+        // Type writer function - used approach as W3Schools and GeeksForGeeks
+        //recursively types each character using setTimeout
+        function typeNextCharacter() {
+            if (index < textArray.length) {
+                if (charIndex < textArray[index].length) {
+                    currentLine += textArray[index][charIndex];
+                    targetTextArea.value = currentLine; 
+                    charIndex++;
+                    setTimeout(typeNextCharacter, 50); 
+                } else {
+                    currentLine += "\n"; 
+                    charIndex = 0;
+                    index++;
+                    setTimeout(typeNextCharacter, 500);
+                }
+            } else {
+                isTyping = false; // done
+            }
+        }
+
+
+
+
+        // displays choices in right box
+        function showChoices(choicesArray) {
+            let choiceBox = document.getElementById("output-box");
+            if (!choiceBox) {
+                console.error(`Error: Element 'output-box' not found.`);
+                return;
+            }
+
+            choiceBox.value = choicesArray.join("\n") + "\n\nEnter the number of your choice.";
+        }
+
+        // clear text and move to next step
+        // function clearOnClick() {
+        //     if (!isTyping) {
+        //         let textArea = document.getElementById("input-box");
+        //         if (textArea && textArea.dataset.cleared === "false") {
+        //             textArea.value = "";
+        //             textArea.dataset.cleared = "true";
+        //         }
+        //         clickedCount++;
+
+        //         //will add different stages here, based on the clicked count
+        //         if (clickedCount === 1) {
+        //             typeText(prompts[0]["Prompt 1"], "input-box"); 
+        //         }
+        //         else if (clickedCount === 2) {
+        //             showChoices(choice[0]["Choice 1"]); 
+
+        //             textArea.value = "";
+        //             textArea.focus();
+        //             setTimeout(() => {
+        //                 let userChoice = parseInt(textArea.value.trim()); 
+        //                 if (userChoice >= 1 && userChoice <= 3) {
+        //                     typeText(response[0]["Response 1"][userChoice - 1], "input-box");
+        //                     clickedCount++; // Progress to next stage
+        //                 } else {
+        //                     textArea.value = "Invalid choice. Enter 1, 2, or 3.";
+        //                 }
+        //             }, 1000);
+        //             //we want to now take in user input 
+
+
+        //         }
+                
+        //     }
+        // }
+        
+        function clearOnClick() {
+            if (!isTyping) {
+                let textArea = document.getElementById("input-box");
+
+                if (textArea && textArea.dataset.cleared === "false") {
+                    textArea.value = "";
+                    textArea.dataset.cleared = "true";
+                }
+
+                clickedCount++;
+
+                if (clickedCount === 1) {
+                    typeText(prompts[0]["Prompt 1"], "input-box");
+                } 
+                else if (clickedCount === 2) { // Initial choice 
+                    showChoices(choice[0]["Choice 1"]);
+                    textArea.value = "";
+                    textArea.focus();
+
+                    // Ensure only one event listener is set
+                    document.getElementById("ai-form").onsubmit = function(event) {
+                        event.preventDefault(); 
+                        let userChoice = parseInt(textArea.value.trim());
+
+                        if (userChoice >= 1 && userChoice <= 3) {
+                            typeText(response[0]["Response 1"][userChoice - 1], "input-box");
+                            clickedCount++;  
+                        } else {
+                            textArea.value = ""; 
+                            textArea.placeholder = "Invalid choice. Enter 1, 2, or 3.";
+                        }
+
+                        if (userChoice == 3) {
+                            trustLevel -= 1;  
+                        }
+                    };
+                } 
+                else if (clickedCount === 4) {
+                    typeText(prompts[1]["Prompt 2"], "input-box");
+                } 
+                else if (clickedCount === 5) { // Level one choice
+                    showChoices(choice[1]["Choice 2"]);
+                    textArea.value = "";
+                    textArea.focus();
+
+                    document.getElementById("ai-form").onsubmit = function(event) {
+                        event.preventDefault(); 
+                        let userChoice = parseInt(textArea.value.trim());
+
+                        if (userChoice >= 1 && userChoice <= 3) {
+                            typeText(response[1]["Response 2"][userChoice - 1], "input-box");
+                            clickedCount++; 
+                        } else {
+                            textArea.value = ""; 
+                            textArea.placeholder = "Invalid choice. Enter 1, 2, or 3.";
+                        }
+
+                        if (userChoice == 3) {
+                            trustLevel -= 1;
+                        }
+                    };
+                } 
+                else if (clickedCount === 7) { 
+                    typeText(prompts[2]["Prompt 3"], "input-box");
+                } 
+                else if (clickedCount === 8) { // Level two choice 
+                    showChoices(choice[2]["Choice 3"]);
+                    textArea.value = "";
+                    textArea.focus();
+
+                    document.getElementById("ai-form").onsubmit = function(event) {
+                        event.preventDefault(); 
+                        let userChoice = parseInt(textArea.value.trim());
+
+                        if (userChoice >= 1 && userChoice <= 3) {
+                            typeText(response[2]["Response 3"][userChoice - 1], "input-box");
+                            clickedCount++; 
+                        } else {
+                            textArea.value = ""; 
+                            textArea.placeholder = "Invalid choice. Enter 1, 2, or 3.";
+                        }
+
+                        if (userChoice == 3) {
+                            trustLevel -= 1;
+                        }
+                    };
+                } 
+                else if (clickedCount === 10) {
+                    typeText(prompts[3]["Prompt 4"], "input-box");
+                } 
+                else if (clickedCount === 11) { // Level three choice 
+                    showChoices(choice[3]["Choice 4"]);
+                    textArea.value = "";
+                    textArea.focus();
+
+                    document.getElementById("ai-form").onsubmit = function(event) {
+                        event.preventDefault(); 
+                        let userChoice = parseInt(textArea.value.trim());
+
+                        if (userChoice >= 1 && userChoice <= 3) {
+                            typeText(response[3]["Response 4"][userChoice - 1], "input-box");
+                            clickedCount++; 
+                        } else {
+                            textArea.value = ""; 
+                            textArea.placeholder = "Invalid choice. Enter 1, 2, or 3.";
+                        }
+
+                        if (userChoice == 3) {
+                            trustLevel -= 1;
+                        }
+
+                        if (trustLevel <= 0) {
+                            typeText(["Trust level too low, terminating communication"], "input-box");
+                        } else {
+                            typeText(["Trust level sufficient, continuing communication"], "input-box");
+                        }
+                    };
+                }
+            }
+        }
+
+        // Function to enable clearing text after typing finishes
+        function enableClearOnClick() {
+            let textArea = document.getElementById("input-box");
+            textArea.addEventListener("focus", clearOnClick);
+        }
+
+        // Function to initialize game on page load
+        function startGame() {
+            typeText(introMessage, "input-box");
+            
+        }
+
+        document.addEventListener("DOMContentLoaded", startGame);
+
+    </script>
+    
+    
+</head>
+<body>
+
+    <h2>Michael's AI</h2>
+
+   
+    <div id="mainblock">
+        <form id="ai-form" onsubmit="processUserInput(event)">
+            <div class="container">
+                <textarea id="input-box" class="box" placeholder="Communications..." required onfocus="clearOnClick()" data-cleared="false"></textarea>
+                <textarea id="output-box" class="box" placeholder="Puzzles..."></textarea>
+            </div>
+            <button type="submit">Send</button>
+        </form>
+
+        <div class="circle-container">
+            <div class="circle" onclick="toggleCircleColor(this)"></div>
+            <div class="circle" onclick="toggleCircleColor(this)"></div>
+            <div class="circle" onclick="toggleCircleColor(this)"></div>
+        </div>
+    </div>
+    <!-- 
+    <div id="mainblock">
+        <form id="ai-form" onsubmit="processUserInput(event)">  
+             <form id="ai-form" hx-post="/ask-openai" hx-trigger="submit" hx-target="#input-box" hx-swap="outerHTML"> 
+
+            <div class="container">
+                <textarea 
+                    id="input-box" 
+                    class="box" 
+                    name="prompt" 
+                    placeholder="Communications..." 
+                    required onfocus="clearOnClick()" 
+                    data-cleared="false"
+                ></textarea>
+        
+                <textarea 
+                    id="output-box" 
+                    class="box" 
+                    placeholder="Puzzles..."
+                ></textarea>
+
+
+            </div>
+            <button type="submit">Send</button>
+        </form>
+
+        <div class="circle-container">
+            <div class="circle" onclick="toggleCircleColor(this)"></div>
+            <div class="circle" onclick="toggleCircleColor(this)"></div>
+            <div class="circle" onclick="toggleCircleColor(this)"></div>
+        </div>
+    </div> 
+-->
+
+</body>
+</html>
+
